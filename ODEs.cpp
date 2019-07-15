@@ -1,5 +1,6 @@
 #include<iostream>
 #include<fstream>
+#include<math.h>
 using namespace std;
 
 
@@ -31,10 +32,12 @@ double dxeny(float ti, float yy, float vy)
 }
 
 //primer método: Euler
-
+ofstream outfile;
 float euler(int fin, int ini, int puntos)
 {
+    outfile.open("datos.dat");
     //creacion de arreglos
+    double dt;
     double dif= 0.01;
     float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos];
     //inicializar con condiciones del enunciado
@@ -50,10 +53,17 @@ float euler(int fin, int ini, int puntos)
         tiem[i]=tiem[i-1]+dt;
         //retroalimentacion de las variables al mismo tiempo
         x[i]=x[i-1]+ dif*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
-        y[i]=y[i-1]+ dif*(dyenx(tiem[i-1],x[i-1],vy[i-1]));
+        y[i]=y[i-1]+ dif*(dxeny(tiem[i-1],x[i-1],vy[i-1]));
         vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],vx[i-1]));
         vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],x[i-1],vx[i-1]));
-    }           
+    }    
+    for(int i=0;i<puntos;i++)
+    {
+        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<tiem[i]<<endl;
+    }
+    outfile.close();
+        
+        
 }
 
 //Segundo Método:Leap frog
@@ -61,6 +71,7 @@ float leap_frog(int fin, int ini, int puntos)
 {
     double dif= 0.01;
     //creacion de arreglos
+    double dt;
     float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos];
     //inicializacion con condiciones del enunciado
     x[0]=0.1163;
@@ -75,7 +86,7 @@ float leap_frog(int fin, int ini, int puntos)
         tiem[i]=tiem[i-1]+dt;
         //retroalimentacion de las variables al mismo tiempo
         x[i]=x[i-1]+ dif*0.5*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
-        y[i]=y[i-1]+ dif*0.5*(dyenx(tiem[i-1],x[i-1],vy[i-1]));
+        y[i]=y[i-1]+ dif*0.5*(dxeny(tiem[i-1],x[i-1],vy[i-1]));
         vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],vx[i-1]));
         vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],x[i-1],vx[i-1]));
     } 
@@ -84,6 +95,7 @@ float leap_frog(int fin, int ini, int puntos)
 float rungekutta(int fin, int ini, int puntos)
 {
     double dif= 0.01;
+    double dt;
     //creacion de arreglos
     float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos];
     float k1x,k2x,k3x,k4x,k1vx,k2vx,k3vx,k4vx,promex,promevx;
@@ -107,8 +119,8 @@ float rungekutta(int fin, int ini, int puntos)
         k3x=dif*dxenx(tiem[i-1]+0.5*dif, x[i-1]+0.5*k2x,vx[i-1]+0.5*k2vx);
         k3vx=dif*dvenx(tiem[i-1]+0.5*dif,x[i-1]+0.5*k2x,vx[i-1]+0.5*k2x);
             
-        k4x =delta*dxenx(tiem[i-1]+dif, x[i-1]+k3x, vx[i-1]+ k3vx);
-        k4v =delta*dvenx(tiem[i-1]+dif, x[i-1]+k3x, vx[i-1]+ k3x);
+        k4x =dif*dxenx(tiem[i-1]+dif, x[i-1]+k3x, vx[i-1]+ k3vx);
+        k4vx =dif*dvenx(tiem[i-1]+dif, x[i-1]+k3x, vx[i-1]+ k3x);
         
         //Pasos para Y
         k1y=dif*dxeny(tiem[i-1],y[i-1],vy[i-1]);
@@ -120,8 +132,8 @@ float rungekutta(int fin, int ini, int puntos)
         k3y=dif*dxeny(tiem[i-1]+0.5*dif, y[i-1]+0.5*k2y,vy[i-1]+0.5*k2vy);
         k3vy=dif*dveny(tiem[i-1]+0.5*dif,y[i-1]+0.5*k2y,vy[i-1]+0.5*k2y);
             
-        k4y =delta*dxeny(tiem[i-1]+dif, y[i-1]+k3y, vy[i-1]+ k3vy);
-        k4vy =delta*dveny(tiem[i-1]+dif, y[i-1]+k3y, vy[i-1]+ k3y);
+        k4y =dif*dxeny(tiem[i-1]+dif, y[i-1]+k3y, vy[i-1]+ k3vy);
+        k4vy =dif*dveny(tiem[i-1]+dif, y[i-1]+k3y, vy[i-1]+ k3y);
         
         //Paso final de rungekutta
         promex=(1/6)*(k1x+2.0*k2x+2.0*k3x+k4x);
@@ -140,8 +152,7 @@ float rungekutta(int fin, int ini, int puntos)
 int main()
 {
     euler(20,0,100);
-    leap_frog(20,0,100);
-    rungekutta(20,0,100);
+    
         
     return 0;
 }
