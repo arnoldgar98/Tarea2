@@ -6,25 +6,21 @@ using namespace std;
 
 //definicion de las dos derivadas
 //En X
-double dvenx(float tiempo, float xx, float vx)
+double dvenx(float tiempo, float xx, float r12)
 {
-    double G = 6.674*pow(10, -11);
+    double G = 1.982*pow(10,-29);
     double M = 1.989*pow(10, 30);
-    //Unidades astronomicas
-    double r12= 1;
-    return (-G*M/r12)*0.1163;
+    return (-G*M/pow(r12,3))*xx;
 }
 double dxenx(float tiempo,float xx, float vx){
     return vx;
 }
 //En Y
-double dveny(float tiempo, float yy, float vy)
+double dveny(float tiempo, float yy, float r12)
 {
-    double G = 6.674*pow(10, -11);
+    double G = 1.982*pow(10,-29);
     double M = 1.989*pow(10, 30);
-    //Unidades astronomicas
-    double r12= 1;
-    return (-G*M/r12)*0.9772;
+    return (-G*M/pow(r12,3))*yy;
 }
 double dxeny(float ti, float yy, float vy)
 {
@@ -33,19 +29,22 @@ double dxeny(float ti, float yy, float vy)
 
 //primer método: Euler
 ofstream outfile;
-float euler(int fin, int ini, int puntos)
+float euler(double fin, double ini, int puntos)
 {
     outfile.open("datos.dat");
     //creacion de arreglos
     double dt;
-    double dif= 0.01;
-    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos];
+    float dif;
+    dif= (fin-ini)/puntos;
+    cout<<dif<<endl;
+    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos];
     //inicializar con condiciones del enunciado
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
-    dt=(fin-ini)/puntos;
+    //inicializar la distancia del radio con condicion inicial
+    r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
     //desde 1, porque ya usamos la condicion inicial
     for(int i=1; i<puntos;i++)
     {
@@ -53,9 +52,10 @@ float euler(int fin, int ini, int puntos)
         tiem[i]=tiem[i-1]+dt;
         //retroalimentacion de las variables al mismo tiempo
         x[i]=x[i-1]+ dif*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
-        y[i]=y[i-1]+ dif*(dxeny(tiem[i-1],x[i-1],vy[i-1]));
-        vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],vx[i-1]));
-        vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],x[i-1],vx[i-1]));
+        y[i]=y[i-1]+ dif*(dxeny(tiem[i-1],y[i-1],vy[i-1]));
+        r12[i] = sqrt(pow(y[i],2) + pow(x[i],2));
+        vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],r12[i-1]));
+        vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],y[i-1],r12[i-1]));
     }    
     for(int i=0;i<puntos;i++)
     {
@@ -65,31 +65,54 @@ float euler(int fin, int ini, int puntos)
         
         
 }
-
+ofstream outfile2;
 //Segundo Método:Leap frog
-float leap_frog(int fin, int ini, int puntos)
+float leap_frog(double fin, double ini, int puntos)
 {
-    double dif= 0.01;
+    outfile2.open("datos2.dat");
+    float dif;
+    dif= (fin-ini)/puntos;
     //creacion de arreglos
     double dt;
-    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos];
+    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos];
     //inicializacion con condiciones del enunciado
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
     dt=(fin-ini)/puntos;
-    //desde 1, porque ya usamos la condicion inicial
+    //inicializar la distancia del radio con condicion inicial
+    r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
+    //generacion del paso 1 leap backwards
+   
+    //desde 2, porque ya usamos la condicion inicial
     for(int i=1; i<puntos;i++)
     {
-        //avance del tiempo
-        tiem[i]=tiem[i-1]+dt;
-        //retroalimentacion de las variables al mismo tiempo
-        x[i]=x[i-1]+ dif*0.5*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
-        y[i]=y[i-1]+ dif*0.5*(dxeny(tiem[i-1],x[i-1],vy[i-1]));
-        vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],vx[i-1]));
-        vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],x[i-1],vx[i-1]));
+        if(i==1)
+        {
+            x[i]=x[i-1]+ dif*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
+            y[i]=y[i-1]+ dif*(dxeny(tiem[i-1],y[i-1],vy[i-1]));
+            vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],r12[i-1]));
+            vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],y[i-1],r12[i-1]));
+            r12[i] = sqrt(pow(y[i],2) + pow(x[i],2));
+        }
+        
+        else{
+            //avance del tiempo
+            tiem[i]=tiem[i-1]+dt;
+            //retroalimentacion de las variables al mismo tiempo
+            x[i]=x[i-2]+ dif*2*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
+            y[i]=y[i-2]+ dif*2*(dxeny(tiem[i-1],x[i-1],vy[i-1]));
+            vx[i]=vx[i-2]+ dif*2*(dvenx(tiem[i-1],x[i-1],vx[i-1]));
+            vy[i]=vy[i-2]+ dif*2*(dveny(tiem[i-1],x[i-1],vx[i-1]));
+            r12[i] = sqrt(pow(y[i],2) + pow(x[i],2));
+        }
     } 
+    for(int i=0;i<puntos;i++)
+    {
+        outfile2<<x[i]<<";"<<y[i]<<endl;
+    }
+    outfile2.close();
 }
 //Tercer método: Runge-kutta 4orden
 float rungekutta(int fin, int ini, int puntos)
@@ -151,8 +174,8 @@ float rungekutta(int fin, int ini, int puntos)
 }
 int main()
 {
-    euler(20,0,100);
-    
+    euler(20,0,1000);
+    leap_frog(20,0,1000);
         
     return 0;
 }
