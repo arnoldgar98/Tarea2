@@ -34,14 +34,20 @@ float euler(int fin, int ini, int puntos)
     outfile.open("datos.dat");
     //creacion de arreglos
     double dt;
-    double dif= 0.001;
+    float dif;
+    dif= 0.01;
+    cout<<fin<<endl;
+    cout<<ini<<endl;
+    cout<<puntos<<endl;
+    cout<<dif<<endl;
     float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos];
     //inicializar con condiciones del enunciado
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
-    dt=(fin-ini)/puntos;
+    //inicializar la distancia del radio con condicion inicial
+    r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
     //desde 1, porque ya usamos la condicion inicial
     for(int i=1; i<puntos;i++)
     {
@@ -64,6 +70,6 @@ float euler(int fin, int ini, int puntos)
 }
 int main()
 {
-    euler(0,1,1000);
+    euler(1,0,100);
     return 0;
 }
