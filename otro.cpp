@@ -1,6 +1,6 @@
 #include<iostream>
 #include<fstream>
-#include<math.h>
+#include<cmath>
 using namespace std;
 
 
@@ -8,7 +8,7 @@ using namespace std;
 //En X
 double dvenx(float tiempo, float xx, float r12)
 {
-    double G = 1.982*pow(10,-29);
+    double G = 1.9825*pow(10,-29);
     double M = 1.989*pow(10, 30);
     return (-G*M/pow(r12,3))*xx;
 }
@@ -27,49 +27,52 @@ double dxeny(float ti, float yy, float vy)
     return vy;
 }
 
-//primer método: Euler
-ofstream outfile;
-float euler(int fin, int ini, int puntos)
+//Segundo Método:Leap frog
+float leap_frog(double fin, double ini, int puntos)
 {
-    outfile.open("datos.dat");
+    
+    double dif;
+    dif= 0.01;
     //creacion de arreglos
     double dt;
-    float dif;
-    dif= 0.01;
-    cout<<fin<<endl;
-    cout<<ini<<endl;
-    cout<<puntos<<endl;
-    cout<<dif<<endl;
-    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos];
-    //inicializar con condiciones del enunciado
+    double x[puntos],y[puntos],vy[puntos],vx[puntos],tiem[puntos],r12[puntos];
+    //inicializacion con condiciones del enunciado
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
     //inicializar la distancia del radio con condicion inicial
     r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
-    //desde 1, porque ya usamos la condicion inicial
-    for(int i=1; i<puntos;i++)
+    //generacion del paso 1 leap backwards
+    x[1]=x[0]+ dif*dxenx(tiem[0],x[0],vx[0]);
+    y[1]=y[0]+ dif*dxeny(tiem[0],y[0],vy[0]);
+    vx[1]=vx[0]+ dif*dvenx(tiem[0],x[0],r12[0]);
+    vy[1]=vy[0]+ dif*dveny(tiem[0],y[0],r12[0]);
+    r12[1] = sqrt(pow(y[1],2) + pow(x[1],2));
+    //desde 2, porque ya usamos la condicion inicial
+    for(int i=2; i<puntos;i++)
     {
         //avance del tiempo
         tiem[i]=tiem[i-1]+dt;
         //retroalimentacion de las variables al mismo tiempo
-        x[i]=x[i-1]+ dif*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
-        y[i]=y[i-1]+ dif*(dxeny(tiem[i-1],y[i-1],vy[i-1]));
+        vx[i]=vx[i-2]+ dif*2*dvenx(tiem[i-1],x[i-1],r12[i-1]);
+        vy[i]=vy[i-2]+ dif*2*dveny(tiem[i-1],x[i-1],r12[i-1]);
+        x[i]=x[i-2]+ dif*2*dxenx(tiem[i-1],x[i-1],vx[i-1]);
+        y[i]=y[i-2]+ dif*2*dxeny(tiem[i-1],x[i-1],vy[i-1]);
+        
         r12[i] = sqrt(pow(y[i],2) + pow(x[i],2));
-        vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],r12[i-1]));
-        vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],y[i-1],r12[i-1]));
-    }    
+        
+    } 
+    ofstream outfile2;
+    outfile2.open("datos2.dat");
     for(int i=0;i<puntos;i++)
     {
-        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<tiem[i]<<endl;
+        outfile2<<x[i]<<";"<<y[i]<<endl;
     }
-    outfile.close();
-        
-        
+    outfile2.close();
 }
 int main()
 {
-    euler(1,0,100);
+    leap_frog(20,0,1000);
     return 0;
 }
