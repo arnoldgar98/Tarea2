@@ -26,23 +26,45 @@ y4=datos4[:,1]
 datos5= np.genfromtxt("datos5.dat",delimiter=";")
 x5=datos5[:,0]
 y5=datos5[:,1]
+#rungekutta
+datos6= np.genfromtxt("datos6.dat",delimiter=";")
+x6=datos6[:,0]
+y6=datos6[:,1]
+
+datos7= np.genfromtxt("datos7.dat",delimiter=";")
+x7=datos7[:,0]
+y7=datos7[:,1]
+
+datos8= np.genfromtxt("datos8.dat",delimiter=";")
+x8=datos8[:,0]
+y8=datos8[:,1]
 
 plt.figure()
-plt.subplot(2,3,1)
+plt.subplot(3,3,1)
 plt.plot(x,y)
 
-plt.subplot(2,3,2)
+plt.subplot(3,3,2)
 plt.plot(x1,y1)
 
-plt.subplot(2,3,3)
+plt.subplot(3,3,3)
 plt.plot(x2,y2)
 
-plt.subplot(2,3,4)
+plt.subplot(3,3,4)
 plt.plot(x3,y3)
 
-plt.subplot(2,3,5)
+plt.subplot(3,3,5)
 plt.plot(x4,y4)
 
-plt.subplot(2,3,6)
+plt.subplot(3,3,6)
 plt.plot(x5,y5)
+
+plt.subplot(3,3,7)
+plt.plot(x6,y6)
+
+plt.subplot(3,3,8)
+plt.plot(x7,y7)
+
+plt.subplot(3,3,9)
+plt.plot(x8,y8)
 plt.savefig("primero.png")
+
