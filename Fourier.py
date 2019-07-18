@@ -36,24 +36,35 @@ plt.title("transformada de fourier")
 plt.colorbar()
 plt.savefig("frecuencias")
 
-##filtro de las frecuencias
-def gausiana(x0):
-    e=(1+(1/-x0))**x0
-    return e
-#intento de hacer la gausiana
-filtrosaltos=frecimagen*gausiana(-(abs(frecimagen)-23))
-filtrosbajos=frecimagen2*gausiana(abs(frecimagen2)-23)
-total=filtrosbajos+filtrosaltos
+##filtros
+def filtroaltas(frec):
+    for i in range(np.shape(frec)[0]):
+        for j in range(np.shape(frec)[1]):
+            if(frec[i,j]>10):
+                frec[i,j]=0
+    return frec
+def filtrobajas(frec):
+    for i in range(np.shape(frec)[0]):
+        for j in range(np.shape(frec)[1]):
+            if(frec[i,j]<9):
+                frec[i,j]=0
+    return frec
 
+frecfiltro1 = filtroaltas(frecimagen) 
+frecfiltro2 = filtrobajas(frecimagen2)
+    
+total= np.zeros([np.shape(trans2d)[0],np.shape(trans2d)[1]])
+inversa1=np.fft.ifftshift(frecfiltro1)
+inversa2=np.fft.ifftshift(frecfiltro2)
+total=inversa1+inversa2
+    
     
 
-
 #Inversa para poder graficar
-invtrans= ifft2(trans2d)     
-invtrans2= ifft2(trans2d2)
+invtrans= ifft2(total)     
+
 plt.figure()
-plt.imshow(abs(invtrans),norm=LogNorm())
-plt.imshow(abs(invtrans2),norm=LogNorm())
+plt.imshow(abs(invtrans),norm=LogNorm(),cmap='gray')
 plt.xlabel("frecuencias")
 plt.ylabel("Inversa")
 plt.title("Imagen mejorada")
