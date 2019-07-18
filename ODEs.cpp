@@ -6,6 +6,8 @@ using namespace std;
 
 //definicion de las dos derivadas
 //En X
+//las unidades de G estan en UA**3/Kg*YR**3
+//El sol esta centrado en el origen de coordenadas (0,0,0)
 double dvenx(float tiempo, float xx, float r12)
 {
     double G = 1.982*pow(10,-29);
@@ -29,6 +31,9 @@ double dxeny(float ti, float yy, float vy)
 
 //primer método: Euler
 
+//La definicion de energia mecanica total dice ET= Ecinetica + Epotencial de la la masa circundante del sol, es asi como obtenemos la energia cinetica y potencial como sigue:
+
+//
 float euler(double fin, double ini, double dif, string archivo)
     {ofstream outfile;
     outfile.open(archivo);
