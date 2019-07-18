@@ -37,7 +37,14 @@ plt.colorbar()
 plt.savefig("frecuencias")
 
 ##filtro de las frecuencias
-def gausiana():
+def gausiana(x0):
+    e=(1+(1/-x0))**x0
+    return e
+#intento de hacer la gausiana
+filtrosaltos=frecimagen*gausiana(-(abs(frecimagen)-23))
+filtrosbajos=frecimagen2*gausiana(abs(frecimagen2)-23)
+total=filtrosbajos+filtrosaltos
+
     
 
 
