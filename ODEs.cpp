@@ -29,12 +29,12 @@ double dxeny(float ti, float yy, float vy)
 
 //primer método: Euler
 
-float euler(double fin, double ini, double dif, string name)
+float euler(double fin, double ini, double dif, string archivo)
     {ofstream outfile;
-    outfile.open(name);
+    outfile.open(archivo);
     //creacion de arreglos
     int puntos= (fin-ini)/dif;
-    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos];
+    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos],momento[puntos];
     //inicializar con condiciones del enunciado
     x[0]=0.1163;
     y[0]=0.9772;
@@ -43,20 +43,21 @@ float euler(double fin, double ini, double dif, string name)
     //inicializar la distancia del radio con condicion inicial
     r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
     //desde 1, porque ya usamos la condicion inicial
+    //definicion del momentum inicial(este momento fue usado asi en base a la explicacion de la profesora)
+    momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
     for(int i=1; i<puntos;i++)
-    {
-        //avance del tiempo
-        
-        //retroalimentacion de las variables al mismo tiempo
+    { 
+        //retroalimentacion de las variables al mismo tiempo, tomando la condicion inicial 0 del enunciado
         x[i]=x[i-1]+ dif*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
         y[i]=y[i-1]+ dif*(dxeny(tiem[i-1],y[i-1],vy[i-1]));
         r12[i] = sqrt(pow(y[i],2) + pow(x[i],2));
         vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],r12[i-1]));
         vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],y[i-1],r12[i-1]));
+        momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
     }    
     for(int i=0;i<puntos;i++)
     {
-        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<tiem[i]<<endl;
+        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<endl;
     }
     outfile.close();
         
@@ -65,53 +66,51 @@ float euler(double fin, double ini, double dif, string name)
 
 
 //Segundo Método:Leap frog
-float leap_frog(double fin, double ini, double dif, string name)
-{
-    
-    int puntos= 20/dif;
-    //creacion de arreglos
-    double dt;
-    double x[puntos],y[puntos],vy[puntos],vx[puntos],tiem[puntos],r12[puntos];
+float leap_frog(double fin, double ini, double dif, string archivo)
+{   ofstream outfile2;   
+    int puntos= fin/dif;
+    //creacion de arreglos y variables locales. lo hice asi por miedo a que se me modificaran los arreglos en otros metodos implementados
+    double x[puntos],y[puntos],vy[puntos],vx[puntos],tiem[puntos],r12[puntos],momento[puntos];
     //inicializacion con condiciones del enunciado
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
     //inicializar la distancia del radio con condicion inicial
-    r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
-   
+    r12[0]=sqrt(pow(y[0],2)+pow(x[0],2));
+   //momento con condiciones iniciales
+    momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
    
     //desde 2, porque ya usamos la condicion inicial
     for(int i=1; i<puntos;i++)
     {
-        //avance del tiempo
-        tiem[i]=tiem[i-1]+dt;
-        //retroalimentacion de las variables al mismo tiempo
+        
+        //retroalimentacion de las variables al mismo tiempo, el uso de 0.5 es debido a que uso central difference donde es salto de deltat/2
         x[i]=x[i-1]+ dif*0.5*dxenx(tiem[i-1],x[i-1],vx[i-1]);
         y[i]=y[i-1]+ dif*0.5*dxeny(tiem[i-1],y[i-1],vy[i-1]);
         r12[i] = sqrt(pow(y[i],2) + pow(x[i],2));
         vx[i]=vx[i-1]+ dif*dvenx(tiem[i-1],x[i-1],r12[i-1]);
         vy[i]=vy[i-1]+ dif*dveny(tiem[i-1],y[i-1],r12[i-1]);
-        
+        momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
         
         
         
     } 
-    ofstream outfile2;
-    outfile2.open(name);
+    
+    outfile2.open(archivo);
     for(int i=0;i<puntos;i++)
     {
-        outfile2<<x[i]<<";"<<y[i]<<endl;
+        outfile2<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<endl;
     }
     outfile2.close();
 }
 //Tercer método: Runge-kutta 4orden
-float rungekutta(double fin, double ini, double dif, string name)
+float rungekutta(double fin, double ini, double dif, string archivo)
 {
+    //Defini todo en variables locales, por miedo a que se modificaran los arreglos en todos los metodos
     int puntos= (fin-ini)/dif;
-    double dt;
     //creacion de arreglos
-    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos];
+    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos],momento[puntos];
     float k1x,k2x,k3x,k4x,k1vx,k2vx,k3vx,k4vx,promex,promevx;
     float k1y,k2y,k3y,k4y,k1vy,k2vy,k3vy,k4vy,promey,promevy;
     //inicializacion con condiciones del enunciado
@@ -119,27 +118,29 @@ float rungekutta(double fin, double ini, double dif, string name)
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
-    r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
-    dt=(fin-ini)/puntos;
- 
+    r12[0]=sqrt(pow(y[0],2)+pow(x[0],2));
+    //momento con condicion inicial
+    momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
     for(int i=1;i<=puntos;i++)
     {
-        //Pasos para X
+        //Primera pendiente de rungekutta para los k1 en x,y,vx,vy
         k1x=dif*dxenx(tiem[i-1],x[i-1],vx[i-1]);
         k1y=dif*dxeny(tiem[i-1],y[i-1],vy[i-1]);
         k1vx=dif*dvenx(tiem[i-1],x[i-1],r12[i-1]);
         k1vy=dif*dveny(tiem[i-1],y[i-1],r12[i-1]);
             
-        k2x=dif*dxenx(tiem[i-1], (x[i-1]+0.5*k1x),(vx[i-1]+0.5*k1vx));
-        k2y=dif*dxeny(tiem[i-1], (y[i-1]+0.5*k1y),(vy[i-1]+0.5*k1vy));
+        //evaluacion en punto medio para los k2 en x,y,vx,vy
+        k2x=dif*dxenx(tiem[i-1], (x[i-1]),(vx[i-1]+0.5*k1vx));
+        k2y=dif*dxeny(tiem[i-1], (y[i-1]),(vy[i-1]+0.5*k1vy));
         k2vx=dif*dvenx(tiem[i-1], (x[i-1]+0.5*k1y),r12[i-1]);
         k2vy=dif*dveny(tiem[i-1], (y[i-1]+0.5*k1y),r12[i-1]);    
             
-        k3x=dif*dxenx(tiem[i-1], (x[i-1]+0.5*k2x),(vx[i-1]+0.5*k2vx));
-        k3y=dif*dxeny(tiem[i-1], (y[i-1]+0.5*k2y),(vy[i-1]+0.5*k2vy));
-        k3vx=dif*dvenx(tiem[i-1], (x[i-1]+0.5*k2y),r12[i-1]);
-        k3vy=dif*dveny(tiem[i-1], (y[i-1]+0.5*k2y),r12[i-1]);  
-        
+        //evaluacion en punto medio para los k3 en x,y,vx,vy
+        k3x=dif*dxenx(tiem[i-1], x[i-1],vx[i-1]+0.5*k2vx);
+        k3y=dif*dxeny(tiem[i-1], y[i-1],vy[i-1]+0.5*k2vy);
+        k3vx=dif*dvenx(tiem[i-1], x[i-1]+0.5*k2y,r12[i-1]);
+        k3vy=dif*dveny(tiem[i-1], y[i-1]+0.5*k2y,r12[i-1]);  
+        //Evaluacion de la pendiente para mejorar la calibracion para los k4 en x,y,vx,vy
         k4x=dif*dxenx(tiem[i-1],x[i-1],vx[i-1]);
         k4y=dif*dxeny(tiem[i-1],y[i-1],vy[i-1]);
         k4vx=dif*dvenx(tiem[i-1],x[i-1],r12[i-1]);
@@ -152,15 +153,18 @@ float rungekutta(double fin, double ini, double dif, string name)
         
         x[i] = x[i-1] + promex;
         y[i] = y[i-1] + promey;
+        r12[i]=sqrt(pow(y[i],2) + pow(x[i],2));
+        //retroalimentacion despues de velocidades 
         vx[i] = vx[i-1] + promevx;
         vy[i] = vy[i-1] + promevy;
-        r12[i]=sqrt(pow(y[i],2) + pow(x[i],2));
+        momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
+        
     }
     ofstream outfile3;
-    outfile3.open(name);
+    outfile3.open(archivo);
     for(int i=0;i<puntos;i++)
     {
-        outfile3<<x[i]<<";"<<y[i]<<endl;
+        outfile3<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<endl;
     }
     outfile3.close();
     
