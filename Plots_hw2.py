@@ -85,7 +85,7 @@ mome8=datos8[:,4]
 tiem8=datos8[:,5]
 emec8=datos8[:,6]
 #Graficas de todos los metodos(sin momento ni energia)
-plt.figure()
+plt.figure(figsize=(15,20))
 plt.subplot(3,3,1)
 plt.plot(x,y)
 plt.title("Euler dt=0.01")
@@ -143,7 +143,7 @@ plt.savefig("primero.png")
 
 
 ##Para las velocidades de todos los metodos
-plt.figure()
+plt.figure(figsize=(15,20))
 plt.subplot(3,3,1)
 plt.plot(vx,vy)
 plt.title("Euler dt=0.01")
@@ -200,7 +200,7 @@ plt.ylabel("VY")
 plt.savefig("segundo.png")
 
 #Momento de todos los metodos
-plt.figure()
+plt.figure(figsize=(15,20))
 plt.subplot(3,3,1)
 plt.plot(tiem,mome)
 plt.title("Euler dt=0.01")
@@ -257,7 +257,7 @@ plt.ylabel("momento")
 plt.savefig("tercera.png")
 
 #Energia mecanica de las orbitas
-plt.figure()
+plt.figure(figsize=(15,20))
 plt.subplot(3,3,1)
 plt.plot(tiem,emec)
 plt.title("Euler dt=0.01")
