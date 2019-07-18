@@ -32,15 +32,18 @@ double dxeny(float ti, float yy, float vy)
 //primer método: Euler
 
 //La definicion de energia mecanica total dice ET= Ecinetica + Epotencial de la la masa circundante del sol, es asi como obtenemos la energia cinetica y potencial como sigue:
-
+//energia cinetica= 1/2*masatierra*velocidad**2 "velocidad en x y y"
+//energia potencial= mtierra*G/r12
 //
 float euler(double fin, double ini, double dif, string archivo)
     {ofstream outfile;
     outfile.open(archivo);
     //creacion de arreglos
     int puntos= (fin-ini)/dif;
-    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos],momento[puntos];
+    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos],momento[puntos],epotencial[puntos],ecinetica[puntos],emecanica[puntos];
     //inicializar con condiciones del enunciado
+    double G1 = 1.982*pow(10,-29); 
+    double mTierra= 5.972*pow(10,24); 
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
@@ -48,6 +51,10 @@ float euler(double fin, double ini, double dif, string archivo)
     tiem[0]=0.0;
     //inicializar la distancia del radio con condicion inicial
     r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
+    epotencial[0]=mTierra*G1/r12[0]; 
+    ecinetica[0]=0.5*mTierra*(pow(vx[0],2)+pow(vy[0],2));
+    emecanica[0]=epotencial[0]+ecinetica[0]; 
+    
     //desde 1, porque ya usamos la condicion inicial
     //definicion del momentum inicial(este momento fue usado asi en base a la explicacion de la profesora)
     momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
@@ -61,10 +68,13 @@ float euler(double fin, double ini, double dif, string archivo)
         vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],r12[i-1]));
         vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],y[i-1],r12[i-1]));
         momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
+        epotencial[i]=mTierra*G1/r12[i];
+        ecinetica[i]=0.5*mTierra*(pow(vx[i],2)+pow(vy[i],2));
+        emecanica[i]=epotencial[i]+ecinetica[i]; 
     }    
     for(int i=0;i<puntos;i++)
     {
-        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<endl;
+        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<";"<<emecanica[i]<<endl;
     }
     outfile.close();
         
@@ -77,17 +87,20 @@ float leap_frog(double fin, double ini, double dif, string archivo)
 {   ofstream outfile2;   
     int puntos= fin/dif;
     //creacion de arreglos y variables locales. lo hice asi por miedo a que se me modificaran los arreglos en otros metodos implementados
-    double x[puntos],y[puntos],vy[puntos],vx[puntos],tiem[puntos],r12[puntos],momento[puntos];
+    double x[puntos],y[puntos],vy[puntos],vx[puntos],tiem[puntos],r12[puntos],momento[puntos],epotencial[puntos],ecinetica[puntos],emecanica[puntos];
     //inicializacion con condiciones del enunciado
+    double G1 = 1.982*pow(10,-29); 
+    double mTierra= 5.972*pow(10,24); 
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
     tiem[0]=0.0;
     //inicializar la distancia del radio con condicion inicial
-    r12[0]=sqrt(pow(y[0],2)+pow(x[0],2));
-   //momento con condiciones iniciales
-    momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
+    r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
+    epotencial[0]=mTierra*G1/r12[0]; 
+    ecinetica[0]=0.5*mTierra*(pow(vx[0],2)+pow(vy[0],2));
+    emecanica[0]=epotencial[0]+ecinetica[0];
    
     //desde 2, porque ya usamos la condicion inicial
     for(int i=1; i<puntos;i++)
@@ -100,7 +113,9 @@ float leap_frog(double fin, double ini, double dif, string archivo)
         vx[i]=vx[i-1]+ dif*dvenx(tiem[i-1],x[i-1],r12[i-1]);
         vy[i]=vy[i-1]+ dif*dveny(tiem[i-1],y[i-1],r12[i-1]);
         momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
-        
+        epotencial[i]=mTierra*G1/r12[i];
+        ecinetica[i]=0.5*mTierra*(pow(vx[i],2)+pow(vy[i],2));
+        emecanica[i]=epotencial[i]+ecinetica[i]; 
         
         
     } 
@@ -108,7 +123,7 @@ float leap_frog(double fin, double ini, double dif, string archivo)
     outfile2.open(archivo);
     for(int i=0;i<puntos;i++)
     {
-        outfile2<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<endl;
+        outfile2<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<";"<<emecanica[i]<<endl;
     }
     outfile2.close();
 }
@@ -118,17 +133,22 @@ float rungekutta(double fin, double ini, double dif, string archivo)
     //Defini todo en variables locales, por miedo a que se modificaran los arreglos en todos los metodos
     int puntos= (fin-ini)/dif;
     //creacion de arreglos
-    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos],momento[puntos];
+    float x[puntos], y[puntos], vy[puntos], vx[puntos], tiem[puntos],r12[puntos],momento[puntos],epotencial[puntos],ecinetica[puntos],emecanica[puntos];
     float k1x,k2x,k3x,k4x,k1vx,k2vx,k3vx,k4vx,promex,promevx;
     float k1y,k2y,k3y,k4y,k1vy,k2vy,k3vy,k4vy,promey,promevy;
     //inicializacion con condiciones del enunciado
+    double G1 = 1.982*pow(10,-29); 
+    double mTierra= 5.972*pow(10,24); 
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
     tiem[0]=0.0;
-    r12[0]=sqrt(pow(y[0],2)+pow(x[0],2));
-    //momento con condicion inicial
+    //inicializar la distancia del radio con condicion inicial
+    r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
+    epotencial[0]=mTierra*G1/r12[0]; 
+    ecinetica[0]=0.5*mTierra*(pow(vx[0],2)+pow(vy[0],2));
+    emecanica[0]=epotencial[0]+ecinetica[0];
     momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
     for(int i=1;i<=puntos;i++)
     {
@@ -169,12 +189,17 @@ float rungekutta(double fin, double ini, double dif, string archivo)
         momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
         tiem[i]=tiem[i-1]+dif;
         
+        //aca la energia
+        epotencial[i]=mTierra*G1/r12[i];
+        ecinetica[i]=0.5*mTierra*(pow(vx[i],2)+pow(vy[i],2));
+        emecanica[i]=epotencial[i]+ecinetica[i];
+        
     }
     ofstream outfile3;
     outfile3.open(archivo);
     for(int i=0;i<puntos;i++)
     {
-        outfile3<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<endl;
+        outfile3<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<";"<<emecanica[i]<<endl;
     }
     outfile3.close();
     
