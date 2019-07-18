@@ -102,16 +102,22 @@ float leap_frog(double fin, double ini, double dif, string archivo)
     ecinetica[0]=0.5*mTierra*(pow(vx[0],2)+pow(vy[0],2));
     emecanica[0]=epotencial[0]+ecinetica[0];
    
+ 
+    x[1]=x[0]+ dif*(dxenx(tiem[0],x[0],vx[0]));
+    y[1]=y[0]+ dif*(dxeny(tiem[0],y[0],vy[0]));
+    r12[1] = sqrt(pow(y[0],2) + pow(x[0],2));
+    vx[1]=vx[0]+ dif*(dvenx(tiem[0],x[0],r12[0]));
+    vy[1]=vy[0]+ dif*(dveny(tiem[0],y[0],r12[0]));
     //desde 2, porque ya usamos la condicion inicial
-    for(int i=1; i<puntos;i++)
+    for(int i=2; i<puntos;i++)
     {
         tiem[i]=tiem[i-1]+dif;
         //retroalimentacion de las variables al mismo tiempo, el uso de 0.5 es debido a que uso central difference donde es salto de deltat/2
-        x[i]=x[i-1]+ dif*0.5*dxenx(tiem[i-1],x[i-1],vx[i-1]);
-        y[i]=y[i-1]+ dif*0.5*dxeny(tiem[i-1],y[i-1],vy[i-1]);
+        x[i]=x[i-2]+ dif*2*dxenx(tiem[i-1],x[i-1],vx[i-1]);
+        y[i]=y[i-2]+ dif*2*dxeny(tiem[i-1],y[i-1],vy[i-1]);
         r12[i] = sqrt(pow(y[i],2) + pow(x[i],2));
-        vx[i]=vx[i-1]+ dif*dvenx(tiem[i-1],x[i-1],r12[i-1]);
-        vy[i]=vy[i-1]+ dif*dveny(tiem[i-1],y[i-1],r12[i-1]);
+        vx[i]=vx[i-2]+ dif*2*dvenx(tiem[i-1],x[i-1],r12[i-1]);
+        vy[i]=vy[i-2]+ dif*2*dveny(tiem[i-1],y[i-1],r12[i-1]);
         momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
         epotencial[i]=mTierra*G1/r12[i];
         ecinetica[i]=0.5*mTierra*(pow(vx[i],2)+pow(vy[i],2));
