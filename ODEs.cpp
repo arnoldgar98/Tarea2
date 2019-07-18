@@ -40,6 +40,7 @@ float euler(double fin, double ini, double dif, string archivo)
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
+    tiem[0]=0.0;
     //inicializar la distancia del radio con condicion inicial
     r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
     //desde 1, porque ya usamos la condicion inicial
@@ -47,6 +48,7 @@ float euler(double fin, double ini, double dif, string archivo)
     momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
     for(int i=1; i<puntos;i++)
     { 
+        tiem[i]=tiem[i-1]+dif;
         //retroalimentacion de las variables al mismo tiempo, tomando la condicion inicial 0 del enunciado
         x[i]=x[i-1]+ dif*(dxenx(tiem[i-1],x[i-1],vx[i-1]));
         y[i]=y[i-1]+ dif*(dxeny(tiem[i-1],y[i-1],vy[i-1]));
@@ -57,7 +59,7 @@ float euler(double fin, double ini, double dif, string archivo)
     }    
     for(int i=0;i<puntos;i++)
     {
-        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<endl;
+        outfile<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<endl;
     }
     outfile.close();
         
@@ -76,6 +78,7 @@ float leap_frog(double fin, double ini, double dif, string archivo)
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
+    tiem[0]=0.0;
     //inicializar la distancia del radio con condicion inicial
     r12[0]=sqrt(pow(y[0],2)+pow(x[0],2));
    //momento con condiciones iniciales
@@ -84,7 +87,7 @@ float leap_frog(double fin, double ini, double dif, string archivo)
     //desde 2, porque ya usamos la condicion inicial
     for(int i=1; i<puntos;i++)
     {
-        
+        tiem[i]=tiem[i-1]+dif;
         //retroalimentacion de las variables al mismo tiempo, el uso de 0.5 es debido a que uso central difference donde es salto de deltat/2
         x[i]=x[i-1]+ dif*0.5*dxenx(tiem[i-1],x[i-1],vx[i-1]);
         y[i]=y[i-1]+ dif*0.5*dxeny(tiem[i-1],y[i-1],vy[i-1]);
@@ -100,7 +103,7 @@ float leap_frog(double fin, double ini, double dif, string archivo)
     outfile2.open(archivo);
     for(int i=0;i<puntos;i++)
     {
-        outfile2<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<endl;
+        outfile2<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<endl;
     }
     outfile2.close();
 }
@@ -118,6 +121,7 @@ float rungekutta(double fin, double ini, double dif, string archivo)
     y[0]=0.9772;
     vx[0]=-6.35;
     vy[0]=0.606;
+    tiem[0]=0.0;
     r12[0]=sqrt(pow(y[0],2)+pow(x[0],2));
     //momento con condicion inicial
     momento[0]=(r12[0]*vx[0])-(r12[0]-vy[0]);
@@ -158,13 +162,14 @@ float rungekutta(double fin, double ini, double dif, string archivo)
         vx[i] = vx[i-1] + promevx;
         vy[i] = vy[i-1] + promevy;
         momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
+        tiem[i]=tiem[i-1]+dif;
         
     }
     ofstream outfile3;
     outfile3.open(archivo);
     for(int i=0;i<puntos;i++)
     {
-        outfile3<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<endl;
+        outfile3<<x[i]<<";"<<y[i]<<";"<<vx[i]<<";"<<vy[i]<<";"<<momento[i]<<";"<<tiem[i]<<endl;
     }
     outfile3.close();
     
