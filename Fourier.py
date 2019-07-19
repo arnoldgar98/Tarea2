@@ -57,27 +57,27 @@ frecfiltro2 = filtrobajas(frecimagen)
 
 
 plt.subplot(3,2,3)
-plt.imshow(abs(frecfiltro1),norm= LogNorm())
+plt.imshow(abs(frecfiltro2),norm= LogNorm())
 plt.title("frecuencias despues de filtro(seria)")
 plt.colorbar()
 plt.subplot(3,2,4)
-plt.imshow(abs(frecfiltro2),norm= LogNorm())
+plt.imshow(abs(frecfiltro1),norm= LogNorm())
 plt.title("frecuencias despues de filtro(sonriendo)")
 plt.colorbar()
 ##Para calibrar mejor la imagen es posible multiplicar la inversa por valores entre 0 y 1.( consejo de veronica)
 inversa1=np.fft.ifftshift(frecfiltro1)
 inversa2=np.fft.ifftshift(frecfiltro2)
-total=ifft2(inversa1)*0.3+ ifft2(inversa2)*0.8
+total=ifft2(inversa1)*0.4+ ifft2(inversa2)*0.8
 
 prueba1=ifft2(inversa1)
 prueba2=ifft2(inversa2)
 
 plt.subplot(3,2,5)
-plt.imshow(abs(prueba1),norm= LogNorm())
+plt.imshow(abs(prueba2),norm= LogNorm())
 plt.title("Imagen con filtro(seria)")
 plt.colorbar()
 plt.subplot(3,2,6)
-plt.imshow(abs(prueba2),norm= LogNorm())
+plt.imshow(abs(prueba1),norm= LogNorm())
 plt.title("Imagen con filtro(sonriendo)")
 plt.colorbar()
 plt.savefig("ImProceso.pdf")
