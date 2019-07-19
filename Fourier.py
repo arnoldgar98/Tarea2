@@ -27,18 +27,18 @@ plt.savefig("FFtIm.pdf")
 #De acuerdo al paper enviado por sicua, para obtener una imagen hibrida es necesario hacer un filtro para las frecuencias bajas y otro para las frecuencias altas
 frecimagen=np.fft.fftshift(trans2d)
 frecimagen2=np.fft.fftshift(trans2d2)
-plt.figure()
-plt.subplot(1,2,1)
+plt.figure(figsize=(15,15))
+plt.subplot(3,2,1)
 plt.imshow(abs(frecimagen),norm= LogNorm())
-plt.title("transformada de fourier")
+plt.title("frecuencias de la seria")
 plt.colorbar()
-plt.subplot(1,2,2)
+plt.subplot(3,2,2)
 plt.imshow(abs(frecimagen2),norm= LogNorm())
-plt.title("transformada de fourier")
+plt.title("frecuencias sonriendo")
 plt.colorbar()
-plt.savefig("frecuencias")
 
-##filtros
+
+##filtros, la aplicacion del filtro se hizo a prueba y error de acuerdo a la imagen que mejor se veia
 def filtroaltas(frec):
     for i in range(np.shape(frec)[0]):
         for j in range(np.shape(frec)[1]):
@@ -54,10 +54,33 @@ def filtrobajas(frec):
 
 frecfiltro1 = filtroaltas(frecimagen2) 
 frecfiltro2 = filtrobajas(frecimagen)
+
+
+plt.subplot(3,2,3)
+plt.imshow(abs(frecfiltro1),norm= LogNorm())
+plt.title("frecuencias despues de filtro(seria)")
+plt.colorbar()
+plt.subplot(3,2,4)
+plt.imshow(abs(frecfiltro2),norm= LogNorm())
+plt.title("frecuencias despues de filtro(sonriendo)")
+plt.colorbar()
 ##Para calibrar mejor la imagen es posible multiplicar la inversa por valores entre 0 y 1.( consejo de veronica)
 inversa1=np.fft.ifftshift(frecfiltro1)
 inversa2=np.fft.ifftshift(frecfiltro2)
-total=ifft2(inversa1)*0.48+ ifft2(inversa2)*0.8
+total=ifft2(inversa1)*0.3+ ifft2(inversa2)*0.8
+
+prueba1=ifft2(inversa1)
+prueba2=ifft2(inversa2)
+
+plt.subplot(3,2,5)
+plt.imshow(abs(prueba1),norm= LogNorm())
+plt.title("Imagen con filtro(seria)")
+plt.colorbar()
+plt.subplot(3,2,6)
+plt.imshow(abs(prueba2),norm= LogNorm())
+plt.title("Imagen con filtro(sonriendo)")
+plt.colorbar()
+plt.savefig("ImProceso.pdf")
     
     
 
@@ -69,4 +92,4 @@ plt.imshow(abs(total),cmap='gray')
 plt.xlabel("frecuencias")
 plt.ylabel("Inversa")
 plt.title("Imagen mejorada")
-plt.savefig("ImFiltrada.png")
+plt.savefig("ImHybrid.pdf")

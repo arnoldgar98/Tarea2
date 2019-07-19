@@ -33,7 +33,7 @@ double dxeny(float ti, float yy, float vy)
 
 //La definicion de energia mecanica total dice ET= Ecinetica + Epotencial de la la masa circundante del sol, es asi como obtenemos la energia cinetica y potencial como sigue:
 //energia cinetica= 1/2*masatierra*velocidad**2 "velocidad en x y y"
-//energia potencial= mtierra*G/r12
+//energia potencial= mtierra*masol*G/r12
 //
 float euler(double fin, double ini, double dif, string archivo)
     {ofstream outfile;
@@ -44,6 +44,7 @@ float euler(double fin, double ini, double dif, string archivo)
     //inicializar con condiciones del enunciado
     double G1 = 1.982*pow(10,-29); 
     double mTierra= 5.972*pow(10,24); 
+    double M = 1.989*pow(10, 30); 
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
@@ -51,7 +52,7 @@ float euler(double fin, double ini, double dif, string archivo)
     tiem[0]=0.0;
     //inicializar la distancia del radio con condicion inicial
     r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
-    epotencial[0]=mTierra*G1/r12[0]; 
+    epotencial[0]=mTierra*M*G1/r12[0]; 
     ecinetica[0]=0.5*mTierra*(pow(vx[0],2)+pow(vy[0],2));
     emecanica[0]=epotencial[0]+ecinetica[0]; 
     
@@ -68,7 +69,7 @@ float euler(double fin, double ini, double dif, string archivo)
         vx[i]=vx[i-1]+ dif*(dvenx(tiem[i-1],x[i-1],r12[i-1]));
         vy[i]=vy[i-1]+ dif*(dveny(tiem[i-1],y[i-1],r12[i-1]));
         momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
-        epotencial[i]=mTierra*G1/r12[i];
+        epotencial[i]=mTierra*M*G1/r12[i];
         ecinetica[i]=0.5*mTierra*(pow(vx[i],2)+pow(vy[i],2));
         emecanica[i]=epotencial[i]+ecinetica[i]; 
     }    
@@ -91,6 +92,7 @@ float leap_frog(double fin, double ini, double dif, string archivo)
     //inicializacion con condiciones del enunciado
     double G1 = 1.982*pow(10,-29); 
     double mTierra= 5.972*pow(10,24); 
+    double M = 1.989*pow(10, 30);
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
@@ -98,7 +100,7 @@ float leap_frog(double fin, double ini, double dif, string archivo)
     tiem[0]=0.0;
     //inicializar la distancia del radio con condicion inicial
     r12[0]=sqrt(pow(y[0],2) + pow(x[0],2));
-    epotencial[0]=mTierra*G1/r12[0]; 
+    epotencial[0]=mTierra*G1*M/r12[0]; 
     ecinetica[0]=0.5*mTierra*(pow(vx[0],2)+pow(vy[0],2));
     emecanica[0]=epotencial[0]+ecinetica[0];
    
@@ -119,7 +121,7 @@ float leap_frog(double fin, double ini, double dif, string archivo)
         vx[i]=vx[i-2]+ dif*2*dvenx(tiem[i-1],x[i-1],r12[i-1]);
         vy[i]=vy[i-2]+ dif*2*dveny(tiem[i-1],y[i-1],r12[i-1]);
         momento[i]=(r12[i]*vx[i])-(r12[i]-vy[i]);
-        epotencial[i]=mTierra*G1/r12[i];
+        epotencial[i]=mTierra*M*G1/r12[i];
         ecinetica[i]=0.5*mTierra*(pow(vx[i],2)+pow(vy[i],2));
         emecanica[i]=epotencial[i]+ecinetica[i]; 
         
@@ -145,6 +147,7 @@ float rungekutta(double fin, double ini, double dif, string archivo)
     //inicializacion con condiciones del enunciado
     double G1 = 1.982*pow(10,-29); 
     double mTierra= 5.972*pow(10,24); 
+    
     x[0]=0.1163;
     y[0]=0.9772;
     vx[0]=-6.35;
