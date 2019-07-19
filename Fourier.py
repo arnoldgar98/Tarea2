@@ -12,7 +12,7 @@ imagen2= plt.imread("cara_03_grisesMF.png")
 trans2d = fft2(imagen1)
 trans2d2= fft2(imagen2)
 
-plt.figure()
+plt.figure(figsize=(15,15))
 plt.subplot(1,2,1)
 plt.imshow(abs(trans2d),norm=LogNorm())
 plt.colorbar()
