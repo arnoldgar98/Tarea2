@@ -139,7 +139,7 @@ plt.plot(x8,y8)
 plt.title("Rungekutta dt=0.0001")
 plt.xlabel("X")
 plt.ylabel("Y")
-plt.savefig("primero.png")
+plt.savefig("XY_met_dt.pdf")
 
 
 ##Para las velocidades de todos los metodos
@@ -197,7 +197,7 @@ plt.plot(vx8,vy8)
 plt.title("Rungekutta dt=0.0001")
 plt.xlabel("VX")
 plt.ylabel("VY")
-plt.savefig("segundo.png")
+plt.savefig("VxVy_met_dt.pdf")
 
 #Momento de todos los metodos
 plt.figure(figsize=(15,20))
