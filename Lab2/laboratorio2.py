@@ -33,33 +33,42 @@ plt.savefig("primera.png")
 
 ### SEGUNDO PUNTO METODO DE EULER
 #defino la derivada
-def funcion(y1,t1):
-    return 2 - np.exp(-4*t1)-2*y1
+def dyent(t0,y0):
+    return 2-np.exp(-4*t0)-2*y0
 
-#Acá declaro las condiciones iniciales y los arreglos necesarios para poder resolver la ecuacion diferencial
-ini = 0
-final = 1
-puntos = 100
-dy = (final-ini)/puntos
-y= np.zeros(puntos)
-t= np.zeros(puntos)
-
-
-y[0]=1
+puntos=100
+a=0
+b=1
+h=(b-a)/puntos
+t=np.ones(puntos)
+y=np.ones(puntos)
+#condiciones iniciales dadas por el enunciado
 t[0]=0
-
-#FInalmente se crea el bucle que va a llenar los arreglos con la solución a la ecuacin diferencial, para esto se debe tomar el metodo de Euler el cual me actualiza la solución de un punto tomando el valor de la derivada en el punto anterior multiplicado por un delta.
+y[0]=1
 for i in range(1,puntos):
-    t[i]=t[i-1]+dy
-    y[i]=y[i-1]+(dy*funcion(y[i-1],t[i-1]))
+    #avance del tiempo
+    t[i]= t[i-1]+h
+    y[i]= y[i-1]+(h*dyent(t[i-1],y[i-1]))
+    
+#la analitica dada por el enunciado para comparar el metodo del euler con la solucion teorica, y así calcular el error
+def analitica(x0):
+    return 1+0.5*np.exp(-4*x0)-0.5*np.exp(-2*x0)
 
 plt.figure()
-plt.plot(t,y, color = "green", marker = "o")
-plt.xlabel("$t$")
-plt.ylabel("$y(t)$")
-plt.savefig("SolucionODE")
+plt.plot(t,y)
+plt.plot(t,analitica(t))
+plt.savefig("total")    
 
-  
+#Errores
+error=np.abs(analitica(t)-y)/analitica(t)
+plt.figure()
+plt.plot(t,error)
+plt.savefig("Loserrores.png")
+
+#promedio de los errores
+pendientes=error
+promedio=np.sum(pendientes)/(puntos+1)
+print("promedio de errores despues de hacer valor analitica-experimental/analitico es de ",promedio)
         
            
 '''
